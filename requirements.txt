@@ -1,0 +1,4 @@
+pygame-ce~=2.5.3
+opencv-python~=4.11.0.86
+onnxruntime~=1.21.1
+scipy~=1.15.2
