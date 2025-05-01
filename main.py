@@ -10,7 +10,7 @@ OUTLINE_WIDTH = CELL_GAP+BLOCK_GAP
 class Game:
     def __init__(self, screen_size):
         self.board = Board()
-        self.reader = SudokuBoardReader()
+        self.board_reader = SudokuBoardReader()
         self.cell_size = (screen_size - (self.board.size + 2) * CELL_GAP) // self.board.size
         self.font = pygame.font.Font(size=50)
         self.selected_cell = False
@@ -39,9 +39,9 @@ class Game:
         self.board.erase(self.selected_cell_index[0], self.selected_cell_index[1])
 
     def get_board_from_image(self):
-        self.reader.load_image_file()
-        if self.reader.loaded:
-            self.board.load(self.reader.board)
+        self.board_reader.load_image_file()
+        if self.board_reader.loaded:
+            self.board.load(self.board_reader.board)
 
     def solve(self):
         self.board.solve()
@@ -94,8 +94,8 @@ class Board:
                 return False
         block_row = selected_row // 3
         block_column = selected_column // 3
-        for i in range(3*block_row, 3*block_row+1):
-            for j in range(3*block_column, 3*block_column+1):
+        for i in range(3*block_row, 3*(block_row+1)):
+            for j in range(3*block_column, 3*(block_column+1)):
                 if self.content[i][j] == number:
                     return False
         return True
@@ -140,9 +140,9 @@ while running:
             if event.button == 1:
                 game.mouse_click(pygame.mouse.get_pos())
         elif event.type == pygame.KEYDOWN:
-            if event.type == pygame.K_ESCAPE:
+            if event.key == pygame.K_ESCAPE:
                 running = False
-            elif event.unicode.isdigit() and event != '0':
+            elif event.unicode.isdigit():
                 game.place_number(int(event.unicode))
             elif event.key == pygame.K_TAB:
                 game.solve()

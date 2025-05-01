@@ -167,12 +167,12 @@ def center_by_mass(digit):
 
     cy, cx = ndimage.center_of_mass(canvas)
     if np.isnan(cx) or np.isnan(cy):
-        return
+        return None
 
     rows, cols = canvas.shape
-    shiftx = int(np.round(cols / 2.0 - cx))
-    shifty = int(np.round(rows / 2.0 - cy))
+    shift_x = int(np.round(cols / 2.0 - cx))
+    shift_y = int(np.round(rows / 2.0 - cy))
 
-    M = np.float32([[1, 0, shiftx], [0, 1, shifty]])
+    M = np.float32([[1, 0, shift_x], [0, 1, shift_y]])
     centered = cv2.warpAffine(canvas, M, (cols, rows), borderValue=0)
     return centered
