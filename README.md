@@ -44,7 +44,6 @@ Este projeto combina **técnicas de visão computacional** com uma interface em 
 Para que a leitura funcione corretamente:
 - A imagem deve ser digital e conter o tabuleiro, de forma clara e legível
 - A margem do tabuleiro deve estar destacada
-- O modelo usado é o `mnist-12.onnx` (pré-treinado para 10 classes)
 
 ---
 
@@ -66,8 +65,24 @@ python main.py
 
 ## 🧠 Modelo de Reconhecimento
 
+- O script recebe uma imagem e tenta encontrar o tabuleiro
+- O tabuleiro é separado em células
+- As células são processados para facilitar o reconhecimento pelo modelo
+- Células vazias já são separadas nesse processo
 - O projeto utiliza um modelo `.onnx` treinado no dataset MNIST
 - O modelo recebe imagens `28x28` e retorna a predição do dígito contido
+
+---
+
+## 🧩 Resolução do Sudoku
+
+- Encontra-se um quadrado em branco
+- Testam-se os números até que um seja válido na posição
+- Encontra-se o próximo quadrado vazio
+- Caso não haja número possível:
+  - Volta ao quadrado anterior
+  - Coloca o próximo número válido
+- Repete
 
 ---
 
