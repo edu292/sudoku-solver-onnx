@@ -1,5 +1,6 @@
 import pygame
 from sudoku_board_reader import SudokuBoardReader
+from threading import Thread
 
 SCREEN_SIZE = 750
 CELL_GAP = 2
@@ -18,14 +19,16 @@ class Game:
         self.outline_rect = None
 
     def clear_outline(self):
-        pygame.draw.rect(window, (0, 0, 0), self.outline_rect, width=OUTLINE_WIDTH)
+        if self.outline_rect:
+            pygame.draw.rect(window, (0, 0, 0), self.outline_rect, width=OUTLINE_WIDTH)
 
     def mouse_click(self, pos):
-        row = pos[1]//self.cell_size
-        column = pos[0]//self.cell_size
         if self.selected_cell:
             self.clear_outline()
-        self.selected_cell = True
+        else:
+            self.selected_cell = True
+        row = pos[1]//self.cell_size
+        column = pos[0]//self.cell_size
         self.selected_cell_index = (row, column)
 
     def place_number(self, number):
@@ -43,8 +46,28 @@ class Game:
         if self.board_reader.loaded:
             self.board.load(self.board_reader.board)
 
+    def solver(self):
+        row, column = self.board.find_empty()
+        if row == -1:
+            return True
+        self.selected_cell_index = (row, column)
+        for number in range(1, 10):
+            if self.board.place(number, row, column):
+                self.clear_outline()
+                if self.solver():
+                    return True
+                self.selected_cell_index = (row, column)
+        self.board.erase(row, column)
+        return False
+
+
     def solve(self):
-        self.board.solve()
+        if self.selected_cell:
+            self.clear_outline()
+        else:
+            self.selected_cell = True
+        Thread(target=self.solver, daemon=True).start()
+
 
     def draw(self):
         y = 0
@@ -109,21 +132,6 @@ class Board:
 
     def erase(self, row, column):
         self.content[row][column] = 0
-
-    def solve(self):
-        row, column = self.find_empty()
-        if row == -1:
-            return True
-
-        for number in range(1, 10):
-            if self.place(number, row, column):
-                if self.solve():
-                    return True
-
-            self.content[row][column] = 0
-
-        return False
-
 
 pygame.init()
 window = pygame.display.set_mode((SCREEN_SIZE, SCREEN_SIZE))
